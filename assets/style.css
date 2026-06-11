@@ -1,0 +1,417 @@
+/* ═══════════════════════════════════════════════════════
+   Jean Finance OS — Premium UI
+   Inspired by: Stripe, Linear, Vercel dashboards
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+
+html, body, [class*="css"] {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+#MainMenu, footer { visibility: hidden; }
+
+/* ─── Fondo app ──────────────────────────────────────── */
+.stApp {
+  background: #F7F8FA;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════ */
+.jf-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 0 4px;
+}
+.jf-logo {
+  width: 42px;
+  height: 42px;
+  background: #0F172A;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+.jf-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.3px;
+}
+.jf-subtitle {
+  font-size: 0.78rem;
+  color: #94A3B8;
+  margin-top: 1px;
+  letter-spacing: 0.01em;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════ */
+.stTabs [data-baseweb="tab-list"] {
+  background: transparent !important;
+  border-bottom: 1px solid #E8ECF0;
+  gap: 0;
+  padding: 0;
+}
+.stTabs [data-baseweb="tab"] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 10px 18px !important;
+  font-size: 0.83rem !important;
+  font-weight: 500 !important;
+  color: #94A3B8 !important;
+  letter-spacing: 0.01em;
+  transition: color 0.12s !important;
+  margin-bottom: -1px;
+}
+.stTabs [data-baseweb="tab"]:hover {
+  color: #475569 !important;
+  background: transparent !important;
+}
+.stTabs [aria-selected="true"] {
+  color: #0F172A !important;
+  border-bottom: 2px solid #0F172A !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+.stTabs [data-baseweb="tab-panel"] {
+  padding-top: 28px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARDS — métricas
+═══════════════════════════════════════════════════════ */
+[data-testid="metric-container"] {
+  background: #FFFFFF !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 10px !important;
+  padding: 16px 18px 14px !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 0 0 0.5px rgba(15,23,42,0.03) !important;
+  transition: box-shadow 0.15s, border-color 0.15s !important;
+}
+[data-testid="metric-container"]:hover {
+  box-shadow: 0 4px 16px rgba(15,23,42,0.08), 0 0 0 1px rgba(15,23,42,0.06) !important;
+}
+[data-testid="stMetricLabel"] > div {
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #94A3B8 !important;
+}
+[data-testid="stMetricValue"] > div {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+  letter-spacing: -0.5px !important;
+  line-height: 1.2 !important;
+}
+[data-testid="stMetricDelta"] svg { display: none; }
+[data-testid="stMetricDelta"] > div {
+  font-size: 0.74rem !important;
+  color: #94A3B8 !important;
+  font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION LABELS
+═══════════════════════════════════════════════════════ */
+.jf-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #CBD5E1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 30px 0 14px;
+  user-select: none;
+}
+.jf-section::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #E8ECF0;
+}
+hr {
+  border: none !important;
+  border-top: 1px solid #E8ECF0 !important;
+  margin: 14px 0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BALANCE CARD
+═══════════════════════════════════════════════════════ */
+.jf-balance-card {
+  background: #FFFFFF;
+  border: 1px solid #E8ECF0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
+  border-left: 3px solid #10B981;
+}
+.jf-balance-card.negative {
+  border-left-color: #F43F5E;
+}
+.jf-balance-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #94A3B8;
+  margin-bottom: 6px;
+}
+.jf-balance-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+.jf-balance-sub {
+  font-size: 0.76rem;
+  color: #94A3B8;
+  margin-top: 6px;
+  font-weight: 400;
+}
+.jf-balance-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #F0FDF4;
+  color: #10B981;
+  border: 1px solid #BBF7D0;
+  white-space: nowrap;
+}
+.jf-balance-card.negative .jf-balance-badge {
+  background: #FFF1F2;
+  color: #F43F5E;
+  border-color: #FECDD3;
+}
+
+/* ═══════════════════════════════════════════════════════
+   REF TABLE
+═══════════════════════════════════════════════════════ */
+.jf-ref-table {
+  background: #FFFFFF;
+  border: 1px solid #E8ECF0;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.jf-ref-header {
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: #CBD5E1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.jf-ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid #F1F5F9;
+}
+.jf-ref-row:last-child { border-bottom: none; }
+.jf-ref-label { font-size: 0.81rem; color: #64748B; font-weight: 400; }
+.jf-ref-value { font-size: 0.83rem; font-weight: 600; color: #0F172A; }
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS BARS
+═══════════════════════════════════════════════════════ */
+.stProgress > div > div {
+  background: #F1F5F9 !important;
+  border-radius: 99px !important;
+  height: 6px !important;
+}
+.stProgress > div > div > div {
+  background: #0F172A !important;
+  border-radius: 99px !important;
+  transition: width 0.4s ease !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FORMULARIOS
+═══════════════════════════════════════════════════════ */
+.stForm {
+  background: #FFFFFF !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 12px !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.05) !important;
+}
+.stTextInput input,
+.stNumberInput input,
+.stDateInput input {
+  background: #FAFAFA !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 7px !important;
+  color: #0F172A !important;
+  font-size: 0.875rem !important;
+  transition: border-color 0.12s, box-shadow 0.12s !important;
+}
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stDateInput input:focus {
+  background: #FFFFFF !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 3px rgba(15,23,42,0.06) !important;
+  outline: none !important;
+}
+.stSelectbox > div > div {
+  background: #FAFAFA !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 7px !important;
+  color: #0F172A !important;
+  font-size: 0.875rem !important;
+}
+label, .stRadio label {
+  color: #374151 !important;
+  font-size: 0.83rem !important;
+  font-weight: 500 !important;
+}
+.stRadio [data-testid="stMarkdownContainer"] p {
+  color: #374151 !important;
+  font-size: 0.85rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOTONES
+═══════════════════════════════════════════════════════ */
+.stButton > button[kind="primary"],
+.stFormSubmitButton > button[kind="primary"] {
+  background: #0F172A !important;
+  border: none !important;
+  border-radius: 7px !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  color: #FFFFFF !important;
+  letter-spacing: 0.01em !important;
+  transition: opacity 0.12s !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.2) !important;
+}
+.stButton > button[kind="primary"]:hover,
+.stFormSubmitButton > button[kind="primary"]:hover {
+  opacity: 0.85 !important;
+}
+.stButton > button[kind="secondary"] {
+  background: #FFFFFF !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 7px !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  transition: border-color 0.12s, color 0.12s !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
+}
+.stButton > button[kind="secondary"]:hover {
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+.stDownloadButton > button {
+  background: #FFFFFF !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 7px !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DATAFRAME / TABLE
+═══════════════════════════════════════════════════════ */
+[data-testid="stDataFrame"] {
+  border-radius: 10px !important;
+  border: 1px solid #E8ECF0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════════════════════ */
+.stAlert {
+  border-radius: 8px !important;
+  border-left-width: 3px !important;
+  font-size: 0.85rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   EXPANDER
+═══════════════════════════════════════════════════════ */
+.streamlit-expanderHeader {
+  background: #FFFFFF !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 8px !important;
+  font-size: 0.83rem !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+.streamlit-expanderContent {
+  background: #FAFAFA !important;
+  border: 1px solid #E8ECF0 !important;
+  border-top: none !important;
+  border-radius: 0 0 8px 8px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CAPTIONS & TEXT
+═══════════════════════════════════════════════════════ */
+.stCaption, [data-testid="stCaptionContainer"] {
+  color: #94A3B8 !important;
+  font-size: 0.77rem !important;
+}
+p {
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MULTISELECT
+═══════════════════════════════════════════════════════ */
+.stMultiSelect > div > div {
+  background: #FAFAFA !important;
+  border: 1px solid #E8ECF0 !important;
+  border-radius: 7px !important;
+}
+span[data-baseweb="tag"] {
+  background: #F1F5F9 !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 5px !important;
+  color: #475569 !important;
+  font-size: 0.77rem !important;
+  font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SELECTBOX dropdown
+═══════════════════════════════════════════════════════ */
+[data-baseweb="popover"] {
+  border-radius: 8px !important;
+  border: 1px solid #E8ECF0 !important;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.10) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════════════════ */
+[data-testid="stDivider"] {
+  border-color: #E8ECF0 !important;
+}
