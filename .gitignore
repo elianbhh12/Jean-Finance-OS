@@ -1,0 +1,4 @@
+data/finanzas.db
+venv/
+__pycache__/
+*.pyc
