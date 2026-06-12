@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    Jean Finance OS — Premium UI
-   Inspired by: Stripe, Linear, Vercel dashboards
+   Compatible: Local + Streamlit Cloud (light theme forced)
    ═══════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -14,9 +14,13 @@ html, body, [class*="css"] {
 
 #MainMenu, footer { visibility: hidden; }
 
-/* ─── Fondo app ──────────────────────────────────────── */
-.stApp {
-  background: #F7F8FA;
+/* ─── Fondo — forzar claro en Cloud ─────────────────── */
+.stApp,
+.stApp > div,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="block-container"] {
+  background-color: #F7F8FA !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -29,26 +33,26 @@ html, body, [class*="css"] {
   padding: 22px 0 4px;
 }
 .jf-logo {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   background: #0F172A;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   flex-shrink: 0;
 }
 .jf-title {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #0F172A;
   letter-spacing: -0.3px;
 }
 .jf-subtitle {
-  font-size: 0.78rem;
-  color: #94A3B8;
-  margin-top: 1px;
+  font-size: 0.84rem;
+  color: #64748B;
+  margin-top: 2px;
   letter-spacing: 0.01em;
 }
 
@@ -57,7 +61,7 @@ html, body, [class*="css"] {
 ═══════════════════════════════════════════════════════ */
 .stTabs [data-baseweb="tab-list"] {
   background: transparent !important;
-  border-bottom: 1px solid #E8ECF0;
+  border-bottom: 1px solid #E2E8F0 !important;
   gap: 0;
   padding: 0;
 }
@@ -65,11 +69,10 @@ html, body, [class*="css"] {
   background: transparent !important;
   border: none !important;
   border-bottom: 2px solid transparent !important;
-  padding: 10px 18px !important;
-  font-size: 0.83rem !important;
+  padding: 11px 20px !important;
+  font-size: 0.88rem !important;
   font-weight: 500 !important;
   color: #94A3B8 !important;
-  letter-spacing: 0.01em;
   transition: color 0.12s !important;
   margin-bottom: -1px;
 }
@@ -85,39 +88,40 @@ html, body, [class*="css"] {
 }
 .stTabs [data-baseweb="tab-panel"] {
   padding-top: 28px !important;
+  background-color: transparent !important;
 }
 
 /* ═══════════════════════════════════════════════════════
-   CARDS — métricas
+   METRIC CARDS
 ═══════════════════════════════════════════════════════ */
 [data-testid="metric-container"] {
   background: #FFFFFF !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 10px !important;
-  padding: 16px 18px 14px !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 0 0 0.5px rgba(15,23,42,0.03) !important;
-  transition: box-shadow 0.15s, border-color 0.15s !important;
+  padding: 18px 20px 16px !important;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.05) !important;
+  transition: box-shadow 0.15s !important;
 }
 [data-testid="metric-container"]:hover {
-  box-shadow: 0 4px 16px rgba(15,23,42,0.08), 0 0 0 1px rgba(15,23,42,0.06) !important;
+  box-shadow: 0 4px 16px rgba(15,23,42,0.08) !important;
 }
 [data-testid="stMetricLabel"] > div {
-  font-size: 0.7rem !important;
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.07em !important;
   color: #94A3B8 !important;
 }
 [data-testid="stMetricValue"] > div {
-  font-size: 1.5rem !important;
+  font-size: 1.55rem !important;
   font-weight: 700 !important;
   color: #0F172A !important;
   letter-spacing: -0.5px !important;
-  line-height: 1.2 !important;
+  line-height: 1.25 !important;
 }
 [data-testid="stMetricDelta"] svg { display: none; }
 [data-testid="stMetricDelta"] > div {
-  font-size: 0.74rem !important;
+  font-size: 0.78rem !important;
   color: #94A3B8 !important;
   font-weight: 500 !important;
 }
@@ -129,23 +133,23 @@ html, body, [class*="css"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: #CBD5E1;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin: 30px 0 14px;
+  margin: 32px 0 16px;
   user-select: none;
 }
 .jf-section::after {
   content: "";
   flex: 1;
   height: 1px;
-  background: #E8ECF0;
+  background: #E2E8F0;
 }
 hr {
   border: none !important;
-  border-top: 1px solid #E8ECF0 !important;
+  border-top: 1px solid #E2E8F0 !important;
   margin: 14px 0 !important;
 }
 
@@ -154,20 +158,18 @@ hr {
 ═══════════════════════════════════════════════════════ */
 .jf-balance-card {
   background: #FFFFFF;
-  border: 1px solid #E8ECF0;
+  border: 1px solid #E2E8F0;
   border-radius: 12px;
-  padding: 20px 24px;
+  padding: 22px 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
-  border-left: 3px solid #10B981;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.06);
+  border-left: 4px solid #10B981;
 }
-.jf-balance-card.negative {
-  border-left-color: #F43F5E;
-}
+.jf-balance-card.negative { border-left-color: #F43F5E; }
 .jf-balance-label {
-  font-size: 0.7rem;
+  font-size: 0.73rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -175,22 +177,21 @@ hr {
   margin-bottom: 6px;
 }
 .jf-balance-value {
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #0F172A;
   letter-spacing: -1.5px;
   line-height: 1;
 }
 .jf-balance-sub {
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   color: #94A3B8;
-  margin-top: 6px;
-  font-weight: 400;
+  margin-top: 7px;
 }
 .jf-balance-badge {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   background: #F0FDF4;
   color: #10B981;
@@ -208,13 +209,13 @@ hr {
 ═══════════════════════════════════════════════════════ */
 .jf-ref-table {
   background: #FFFFFF;
-  border: 1px solid #E8ECF0;
+  border: 1px solid #E2E8F0;
   border-radius: 10px;
   padding: 16px 18px;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.04);
 }
 .jf-ref-header {
-  font-size: 0.67rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: #CBD5E1;
   text-transform: uppercase;
@@ -225,12 +226,12 @@ hr {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #F1F5F9;
 }
 .jf-ref-row:last-child { border-bottom: none; }
-.jf-ref-label { font-size: 0.81rem; color: #64748B; font-weight: 400; }
-.jf-ref-value { font-size: 0.83rem; font-weight: 600; color: #0F172A; }
+.jf-ref-label { font-size: 0.85rem; color: #64748B; }
+.jf-ref-value { font-size: 0.87rem; font-weight: 600; color: #0F172A; }
 
 /* ═══════════════════════════════════════════════════════
    PROGRESS BARS
@@ -238,7 +239,7 @@ hr {
 .stProgress > div > div {
   background: #F1F5F9 !important;
   border-radius: 99px !important;
-  height: 6px !important;
+  height: 7px !important;
 }
 .stProgress > div > div > div {
   background: #0F172A !important;
@@ -251,44 +252,47 @@ hr {
 ═══════════════════════════════════════════════════════ */
 .stForm {
   background: #FFFFFF !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 12px !important;
-  padding: 6px 10px !important;
+  padding: 8px 12px !important;
   box-shadow: 0 1px 3px rgba(15,23,42,0.05) !important;
 }
 .stTextInput input,
 .stNumberInput input,
 .stDateInput input {
   background: #FAFAFA !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 7px !important;
   color: #0F172A !important;
-  font-size: 0.875rem !important;
-  transition: border-color 0.12s, box-shadow 0.12s !important;
+  font-size: 0.9rem !important;
 }
 .stTextInput input:focus,
-.stNumberInput input:focus,
-.stDateInput input:focus {
+.stNumberInput input:focus {
   background: #FFFFFF !important;
   border-color: #0F172A !important;
   box-shadow: 0 0 0 3px rgba(15,23,42,0.06) !important;
-  outline: none !important;
 }
 .stSelectbox > div > div {
   background: #FAFAFA !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 7px !important;
   color: #0F172A !important;
-  font-size: 0.875rem !important;
+  font-size: 0.9rem !important;
 }
-label, .stRadio label {
+
+/* Labels y radios — letras más grandes */
+label,
+.stRadio label,
+[data-testid="stWidgetLabel"] p,
+[data-testid="stWidgetLabel"] label {
   color: #374151 !important;
-  font-size: 0.83rem !important;
+  font-size: 0.9rem !important;
   font-weight: 500 !important;
 }
-.stRadio [data-testid="stMarkdownContainer"] p {
+.stRadio [data-testid="stMarkdownContainer"] p,
+.stCheckbox [data-testid="stMarkdownContainer"] p {
   color: #374151 !important;
-  font-size: 0.85rem !important;
+  font-size: 0.9rem !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -300,7 +304,7 @@ label, .stRadio label {
   border: none !important;
   border-radius: 7px !important;
   font-weight: 600 !important;
-  font-size: 0.85rem !important;
+  font-size: 0.9rem !important;
   color: #FFFFFF !important;
   letter-spacing: 0.01em !important;
   transition: opacity 0.12s !important;
@@ -312,12 +316,11 @@ label, .stRadio label {
 }
 .stButton > button[kind="secondary"] {
   background: #FFFFFF !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 7px !important;
   color: #374151 !important;
   font-weight: 500 !important;
-  font-size: 0.85rem !important;
-  transition: border-color 0.12s, color 0.12s !important;
+  font-size: 0.9rem !important;
   box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
 }
 .stButton > button[kind="secondary"]:hover {
@@ -326,22 +329,23 @@ label, .stRadio label {
 }
 .stDownloadButton > button {
   background: #FFFFFF !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 7px !important;
   color: #374151 !important;
   font-weight: 500 !important;
-  font-size: 0.85rem !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
+  font-size: 0.9rem !important;
 }
 
 /* ═══════════════════════════════════════════════════════
-   DATAFRAME / TABLE
+   DATAFRAME — solo el contenedor exterior
+   El interior usa canvas/iframe, no se puede estilizar
+   desde CSS externo; config.toml maneja el tema.
 ═══════════════════════════════════════════════════════ */
 [data-testid="stDataFrame"] {
   border-radius: 10px !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   overflow: hidden !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04) !important;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.04) !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -350,7 +354,13 @@ label, .stRadio label {
 .stAlert {
   border-radius: 8px !important;
   border-left-width: 3px !important;
-  font-size: 0.85rem !important;
+  font-size: 0.88rem !important;
+}
+[data-testid="stNotificationContentSuccess"],
+[data-testid="stNotificationContentError"],
+[data-testid="stNotificationContentWarning"],
+[data-testid="stNotificationContentInfo"] {
+  background: #FFFFFF !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -358,29 +368,50 @@ label, .stRadio label {
 ═══════════════════════════════════════════════════════ */
 .streamlit-expanderHeader {
   background: #FFFFFF !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 8px !important;
-  font-size: 0.83rem !important;
+  font-size: 0.88rem !important;
   font-weight: 500 !important;
   color: #374151 !important;
 }
 .streamlit-expanderContent {
   background: #FAFAFA !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-top: none !important;
   border-radius: 0 0 8px 8px !important;
 }
+/* Nuevos selectores de expander en versiones recientes */
+[data-testid="stExpander"] > details {
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
+}
+[data-testid="stExpander"] summary {
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  background: #FFFFFF !important;
+}
 
 /* ═══════════════════════════════════════════════════════
-   CAPTIONS & TEXT
+   CAPTIONS & TEXTO GENERAL
 ═══════════════════════════════════════════════════════ */
-.stCaption, [data-testid="stCaptionContainer"] {
+.stCaption,
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p {
   color: #94A3B8 !important;
-  font-size: 0.77rem !important;
+  font-size: 0.82rem !important;
 }
-p {
-  color: #374151;
-  font-size: 0.875rem;
+p,
+[data-testid="stMarkdownContainer"] p {
+  color: #374151 !important;
+  font-size: 0.9rem !important;
+}
+/* Texto de markdown en general */
+.stMarkdown h4 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #0F172A !important;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -388,7 +419,7 @@ p {
 ═══════════════════════════════════════════════════════ */
 .stMultiSelect > div > div {
   background: #FAFAFA !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 7px !important;
 }
 span[data-baseweb="tag"] {
@@ -396,22 +427,42 @@ span[data-baseweb="tag"] {
   border: 1px solid #E2E8F0 !important;
   border-radius: 5px !important;
   color: #475569 !important;
-  font-size: 0.77rem !important;
+  font-size: 0.82rem !important;
   font-weight: 500 !important;
 }
 
 /* ═══════════════════════════════════════════════════════
-   SELECTBOX dropdown
+   SELECTBOX DROPDOWN
 ═══════════════════════════════════════════════════════ */
-[data-baseweb="popover"] {
+[data-baseweb="popover"],
+[data-baseweb="menu"] {
+  background: #FFFFFF !important;
   border-radius: 8px !important;
-  border: 1px solid #E8ECF0 !important;
+  border: 1px solid #E2E8F0 !important;
   box-shadow: 0 8px 24px rgba(15,23,42,0.10) !important;
+}
+[data-baseweb="menu"] li,
+[role="option"] {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  font-size: 0.88rem !important;
+}
+[data-baseweb="menu"] li:hover,
+[role="option"]:hover {
+  background: #F8FAFC !important;
 }
 
 /* ═══════════════════════════════════════════════════════
    DIVIDER
 ═══════════════════════════════════════════════════════ */
-[data-testid="stDivider"] {
-  border-color: #E8ECF0 !important;
+[data-testid="stDivider"] hr,
+hr {
+  border-color: #E2E8F0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR (si se abre)
+═══════════════════════════════════════════════════════ */
+[data-testid="stSidebar"] {
+  background: #FFFFFF !important;
 }
