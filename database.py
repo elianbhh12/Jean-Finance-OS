@@ -81,9 +81,18 @@ def init_db():
                 clave       TEXT PRIMARY KEY,
                 valor       TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS bolsillo (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                fecha       TEXT    NOT NULL,
+                concepto    TEXT    NOT NULL,
+                monto       REAL    NOT NULL,
+                tipo        TEXT    NOT NULL CHECK(tipo IN ('deposito','retiro')),
+                created_at  TEXT    DEFAULT (datetime('now','localtime'))
+            );
             CREATE INDEX IF NOT EXISTS idx_gastos_fecha   ON gastos(fecha);
             CREATE INDEX IF NOT EXISTS idx_ingresos_fecha ON ingresos(fecha);
             CREATE INDEX IF NOT EXISTS idx_pagos_tc_fecha ON pagos_tc(fecha);
+            CREATE INDEX IF NOT EXISTS idx_bolsillo_fecha ON bolsillo(fecha);
         """)
         _add_col(conn, "gastos",   "nota", "TEXT DEFAULT ''")
         _add_col(conn, "ingresos", "nota", "TEXT DEFAULT ''")
@@ -343,3 +352,45 @@ def set_fijo_estado(concepto: str, anio: int, mes: int, pagado: bool):
             "ON CONFLICT(concepto,anio,mes) DO UPDATE SET pagado=excluded.pagado",
             (concepto, anio, mes, 1 if pagado else 0),
         )
+
+
+# ─── BOLSILLO ─────────────────────────────────────────────────────────────────
+
+def insertar_bolsillo(fecha, concepto: str, monto: float, tipo: str):
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT INTO bolsillo(fecha,concepto,monto,tipo) VALUES(?,?,?,?)",
+            (str(fecha), concepto.strip(), float(monto), tipo),
+        )
+
+
+def obtener_saldo_bolsillo() -> float:
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT COALESCE(SUM(CASE WHEN tipo='deposito' THEN monto ELSE -monto END),0) AS saldo "
+            "FROM bolsillo"
+        ).fetchone()
+    return float(row["saldo"])
+
+
+def obtener_movimientos_bolsillo() -> pd.DataFrame:
+    with get_conn() as conn:
+        return pd.read_sql_query(
+            "SELECT * FROM bolsillo ORDER BY fecha DESC, id DESC", conn
+        )
+
+
+def neto_bolsillo_mes(anio: int, mes: int) -> float:
+    """Depósitos menos retiros del bolsillo en el mes (salida real del banco TD)."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT COALESCE(SUM(CASE WHEN tipo='deposito' THEN monto ELSE -monto END),0) AS neto "
+            "FROM bolsillo WHERE strftime('%Y',fecha)=? AND strftime('%m',fecha)=?",
+            (str(anio), f"{mes:02d}"),
+        ).fetchone()
+    return float(row["neto"])
+
+
+def eliminar_bolsillo(bolsillo_id: int):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM bolsillo WHERE id=?", (bolsillo_id,))

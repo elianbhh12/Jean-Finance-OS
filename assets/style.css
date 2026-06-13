@@ -198,7 +198,149 @@ hr {
 }
 
 /* ═══════════════════════════════════════════════════════
-   BALANCE CARD — hero element
+   HERO — saldo de caja mejorado
+═══════════════════════════════════════════════════════ */
+.jf-hero {
+  background: linear-gradient(140deg, #0A0E1A 0%, #131929 60%, #0F1E35 100%);
+  border-radius: 16px;
+  padding: 28px 32px 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(15,23,42,0.3);
+  margin-bottom: 4px;
+}
+.jf-hero::before {
+  content: "";
+  position: absolute;
+  top: -60px; right: 60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.jf-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 260px; height: 130px;
+  background: radial-gradient(ellipse, rgba(16,185,129,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.jf-hero__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.jf-hero__main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  position: relative; z-index: 1;
+  flex-wrap: wrap;
+}
+.jf-hero__amount {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -3px;
+  line-height: 1;
+  text-shadow: 0 0 50px rgba(99,102,241,0.4);
+}
+.jf-hero__amount--neg {
+  text-shadow: 0 0 50px rgba(239,68,68,0.4);
+}
+.jf-hero__cop {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0;
+  margin-left: 6px;
+}
+.jf-hero__badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(16,185,129,0.18);
+  color: #34D399;
+  border: 1px solid rgba(16,185,129,0.3);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.jf-hero__badge--neg {
+  background: rgba(239,68,68,0.18);
+  color: #FCA5A5;
+  border-color: rgba(239,68,68,0.3);
+}
+.jf-hero__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  position: relative; z-index: 1;
+}
+.jf-hero__bar-bg {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+.jf-hero__bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+.jf-hero__bar-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.35);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.jf-hero__flow {
+  display: flex;
+  gap: 0;
+  position: relative; z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 18px;
+  flex-wrap: wrap;
+}
+.jf-hero-flow-item {
+  flex: 1;
+  text-align: center;
+  padding: 0 16px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  min-width: 90px;
+}
+.jf-hero-flow-item:last-child { border-right: none; }
+.jf-hero-flow-icon {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  line-height: 1;
+}
+.jf-hero-flow-val {
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+.jf-hero-flow-lbl {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BALANCE CARD — hero element (legacy, kept for other pages)
 ═══════════════════════════════════════════════════════ */
 .jf-balance-card {
   background: linear-gradient(135deg, #0A0E1A 0%, #131929 100%);
@@ -1325,3 +1467,159 @@ span[data-baseweb="tag"] {
   display: inline-block;
   white-space: nowrap;
 }
+
+/* ═══════════════════════════════════════════════════════
+   SPENDING ALERT BANNERS
+═══════════════════════════════════════════════════════ */
+.jf-alert {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1.5px solid;
+  margin-bottom: 10px;
+}
+.jf-alert--warn {
+  background: linear-gradient(135deg, #FFFBEB, #FEF9C3);
+  border-color: #FDE68A;
+}
+.jf-alert--danger {
+  background: linear-gradient(135deg, #FFF1F2, #FFE4E6);
+  border-color: #FECDD3;
+}
+.jf-alert--critical {
+  background: linear-gradient(135deg, #1A0505, #3B0A0A);
+  border-color: #7F1D1D;
+}
+.jf-alert__icon { font-size: 1.4rem; flex-shrink: 0; }
+.jf-alert__body { flex: 1; }
+.jf-alert__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+}
+.jf-alert--warn  .jf-alert__title { color: #92400E; }
+.jf-alert--danger .jf-alert__title { color: #BE123C; }
+.jf-alert--critical .jf-alert__title { color: #FCA5A5; }
+.jf-alert__sub {
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+.jf-alert--warn  .jf-alert__sub { color: #B45309; }
+.jf-alert--danger .jf-alert__sub { color: #9F1239; }
+.jf-alert--critical .jf-alert__sub { color: rgba(252,165,165,0.7); }
+.jf-alert__badge {
+  flex-shrink: 0;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid;
+}
+.jf-alert__badge--warn {
+  background: #FEF3C7; border-color: #FCD34D; color: #92400E;
+}
+.jf-alert__badge--danger {
+  background: #FFF1F2; border-color: #FECDD3; color: #BE123C;
+}
+.jf-alert__badge--critical {
+  background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #FCA5A5;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RULE MINI PANEL (80/10/10 compact)
+═══════════════════════════════════════════════════════ */
+.jf-rule-panel {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(15,23,42,0.05);
+  height: 100%;
+}
+.jf-rule-header {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #6366F1;
+  margin-bottom: 18px;
+}
+.jf-rule-row { margin-bottom: 14px; }
+.jf-rule-row:last-child { margin-bottom: 0; }
+.jf-rule-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.jf-rule-label {
+  font-size: 0.79rem;
+  font-weight: 600;
+  color: #374151;
+}
+.jf-rule-pct {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.jf-rule-bar-bg {
+  background: #F1F5F9;
+  border-radius: 99px;
+  height: 7px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.jf-rule-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+.jf-rule-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.69rem;
+  font-weight: 600;
+  color: #64748B;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MINI CARDS (Bolsillo TC 3-col)
+═══════════════════════════════════════════════════════ */
+.jf-mini-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px 14px;
+  height: 100%;
+}
+.jf-mini-card__label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.jf-mini-card__val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.jf-mini-card__sub {
+  font-size: 0.68rem;
+  color: #94A3B8;
+  margin-bottom: 8px;
+}
+.jf-mini-card__badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 0.67rem;
+  font-weight: 700;
+}
+
+/* Fijos 2-col layout improvement */
+.jf-fijos-header { margin-top: 0; }
