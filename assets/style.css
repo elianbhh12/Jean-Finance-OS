@@ -198,142 +198,185 @@ hr {
 }
 
 /* ═══════════════════════════════════════════════════════
-   HERO — saldo de caja mejorado
+   HERO — dashboard premium card v3
 ═══════════════════════════════════════════════════════ */
 .jf-hero {
-  background: linear-gradient(140deg, #0A0E1A 0%, #131929 60%, #0F1E35 100%);
-  border-radius: 16px;
-  padding: 28px 32px 24px;
+  background: linear-gradient(140deg, #08091A 0%, #111827 55%, #0F1E35 100%);
+  border-radius: 20px;
+  padding: 24px 28px 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 12px 40px rgba(15,23,42,0.3);
-  margin-bottom: 4px;
+  box-shadow: 0 16px 48px rgba(8,9,26,0.45), 0 0 0 1px rgba(255,255,255,0.05);
+  margin-bottom: 6px;
 }
 .jf-hero::before {
   content: "";
   position: absolute;
-  top: -60px; right: 60px;
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%);
+  top: -80px; right: 80px;
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 65%);
   border-radius: 50%;
   pointer-events: none;
 }
 .jf-hero::after {
   content: "";
   position: absolute;
-  bottom: -40px; left: 30%;
-  width: 260px; height: 130px;
-  background: radial-gradient(ellipse, rgba(16,185,129,0.1) 0%, transparent 70%);
+  bottom: -50px; left: 20%;
+  width: 300px; height: 150px;
+  background: radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 70%);
   pointer-events: none;
 }
-.jf-hero__eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.42);
-  margin-bottom: 10px;
-  position: relative; z-index: 1;
-}
-.jf-hero__main {
+
+/* ── Row 1: label + badge ──────────────────────────── */
+.jf-hero__head {
   display: flex;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
   margin-bottom: 18px;
   position: relative; z-index: 1;
-  flex-wrap: wrap;
+}
+.jf-hero__eyebrow {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.28);
+}
+.jf-hero__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: rgba(16,185,129,0.13);
+  color: #34D399;
+  border: 1px solid rgba(16,185,129,0.2);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.jf-hero__badge--neg {
+  background: rgba(239,68,68,0.13);
+  color: #FCA5A5;
+  border-color: rgba(239,68,68,0.2);
+}
+
+/* ── Row 2: saldo libre | sep | total en caja ────── */
+.jf-hero__split {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.jf-hero__primary {
+  flex: 1.6;
+  padding-right: 28px;
 }
 .jf-hero__amount {
-  font-size: 2.8rem;
+  font-size: 2.85rem;
   font-weight: 900;
   color: #FFFFFF;
   letter-spacing: -3px;
   line-height: 1;
-  text-shadow: 0 0 50px rgba(99,102,241,0.4);
+  text-shadow: 0 2px 30px rgba(99,102,241,0.4);
+  margin-bottom: 14px;
 }
 .jf-hero__amount--neg {
-  text-shadow: 0 0 50px rgba(239,68,68,0.4);
+  color: #FCA5A5;
+  text-shadow: 0 2px 30px rgba(239,68,68,0.4);
 }
 .jf-hero__cop {
-  font-size: 1.1rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.38);
-  letter-spacing: 0;
-  margin-left: 6px;
-}
-.jf-hero__badge {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: rgba(16,185,129,0.18);
-  color: #34D399;
-  border: 1px solid rgba(16,185,129,0.3);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.jf-hero__badge--neg {
-  background: rgba(239,68,68,0.18);
-  color: #FCA5A5;
-  border-color: rgba(239,68,68,0.3);
+  color: rgba(255,255,255,0.22);
+  letter-spacing: 0.06em;
+  margin-left: 5px;
 }
 .jf-hero__bar-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 22px;
-  position: relative; z-index: 1;
+  gap: 10px;
 }
 .jf-hero__bar-bg {
   flex: 1;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.07);
   border-radius: 99px;
-  height: 6px;
+  height: 4px;
   overflow: hidden;
 }
 .jf-hero__bar-fill {
   height: 100%;
   border-radius: 99px;
-  transition: width 0.6s ease;
+  transition: width 0.7s ease;
 }
 .jf-hero__bar-label {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
+  font-size: 0.61rem;
+  color: rgba(255,255,255,0.2);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
 }
+.jf-hero__vsep {
+  width: 1px;
+  height: 60px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.jf-hero__secondary {
+  flex: 1;
+  padding-left: 28px;
+}
+.jf-hero__sec-label {
+  font-size: 0.61rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.26);
+  margin-bottom: 6px;
+}
+.jf-hero__sec-val {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.84);
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+  margin-bottom: 7px;
+}
+.jf-hero__sec-hint {
+  font-size: 0.67rem;
+  color: rgba(255,255,255,0.25);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Row 3: flow strip ──────────────────────────── */
 .jf-hero__flow {
   display: flex;
-  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 14px;
   position: relative; z-index: 1;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding-top: 18px;
-  flex-wrap: wrap;
 }
 .jf-hero-flow-item {
   flex: 1;
   text-align: center;
-  padding: 0 16px;
-  border-right: 1px solid rgba(255,255,255,0.08);
-  min-width: 90px;
+  padding: 4px 8px 2px;
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
 .jf-hero-flow-item:last-child { border-right: none; }
 .jf-hero-flow-icon {
   font-size: 1.1rem;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  opacity: 0.7;
   line-height: 1;
 }
 .jf-hero-flow-val {
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.5px;
   line-height: 1.1;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 .jf-hero-flow-lbl {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.35);
+  font-size: 0.63rem;
+  color: rgba(255,255,255,0.28);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   font-weight: 600;

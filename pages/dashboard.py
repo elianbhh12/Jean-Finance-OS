@@ -50,87 +50,116 @@ tc_ok    = pend_tc == 0
 # ══════════════════════════════════════════════════════════════════════════════
 # ALERTA DE PRESUPUESTO — solo aparece cuando supera el umbral
 # ══════════════════════════════════════════════════════════════════════════════
+def _cop(v: float) -> str:
+    return f"&#36;{v:,.0f}"
+
 if pct_gasto >= 1.0:
-    st.markdown(f"""
-<div class="jf-alert jf-alert--critical">
-  <span class="jf-alert__icon">🚨</span>
-  <div class="jf-alert__body">
-    <div class="jf-alert__title">Presupuesto agotado — {pct_gasto*100:.0f}% ejecutado</div>
-    <div class="jf-alert__sub">Gastaste <strong>${gasto_mes:,.0f}</strong> de un límite de ${LIMITE_GASTOS:,.0f} · Exceso: <strong>${_exceso:,.0f}</strong></div>
-  </div>
-  <div class="jf-alert__badge jf-alert__badge--critical">−${_exceso:,.0f} sobre límite</div>
-</div>""", unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="jf-alert jf-alert--critical">'
+        f'<span class="jf-alert__icon">🚨</span>'
+        f'<div class="jf-alert__body">'
+        f'<div class="jf-alert__title">Presupuesto agotado — {pct_gasto*100:.0f}% ejecutado</div>'
+        f'<div class="jf-alert__sub">Gastaste <strong>{_cop(gasto_mes)}</strong> de {_cop(LIMITE_GASTOS)} · Exceso: <strong>{_cop(_exceso)}</strong></div>'
+        f'</div>'
+        f'<div class="jf-alert__badge jf-alert__badge--critical">−{_cop(_exceso)} sobre límite</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 elif pct_gasto >= 0.90:
-    st.markdown(f"""
-<div class="jf-alert jf-alert--danger">
-  <span class="jf-alert__icon">🔴</span>
-  <div class="jf-alert__body">
-    <div class="jf-alert__title">Presupuesto crítico — {pct_gasto*100:.0f}% ejecutado</div>
-    <div class="jf-alert__sub">Gastaste ${gasto_mes:,.0f} · Solo quedan <strong>${_resto:,.0f}</strong> disponibles este mes</div>
-  </div>
-  <div class="jf-alert__badge jf-alert__badge--danger">${_resto:,.0f} restantes</div>
-</div>""", unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="jf-alert jf-alert--danger">'
+        f'<span class="jf-alert__icon">🔴</span>'
+        f'<div class="jf-alert__body">'
+        f'<div class="jf-alert__title">Presupuesto crítico — {pct_gasto*100:.0f}% ejecutado</div>'
+        f'<div class="jf-alert__sub">Gastaste {_cop(gasto_mes)} · Solo quedan <strong>{_cop(_resto)}</strong> disponibles</div>'
+        f'</div>'
+        f'<div class="jf-alert__badge jf-alert__badge--danger">{_cop(_resto)} restantes</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 elif pct_gasto >= 0.75:
-    st.markdown(f"""
-<div class="jf-alert jf-alert--warn">
-  <span class="jf-alert__icon">⚡</span>
-  <div class="jf-alert__body">
-    <div class="jf-alert__title">Atención — {pct_gasto*100:.0f}% del presupuesto ejecutado</div>
-    <div class="jf-alert__sub">Gastaste ${gasto_mes:,.0f} de ${LIMITE_GASTOS:,.0f} · Quedan <strong>${_resto:,.0f}</strong></div>
-  </div>
-  <div class="jf-alert__badge jf-alert__badge--warn">${_resto:,.0f} disponibles</div>
-</div>""", unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="jf-alert jf-alert--warn">'
+        f'<span class="jf-alert__icon">⚡</span>'
+        f'<div class="jf-alert__body">'
+        f'<div class="jf-alert__title">Atención — {pct_gasto*100:.0f}% del presupuesto ejecutado</div>'
+        f'<div class="jf-alert__sub">Gastaste {_cop(gasto_mes)} de {_cop(LIMITE_GASTOS)} · Quedan <strong>{_cop(_resto)}</strong></div>'
+        f'</div>'
+        f'<div class="jf-alert__badge jf-alert__badge--warn">{_cop(_resto)} disponibles</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# HERO — saldo de caja con flujo de dinero visual
+# HERO — saldo libre (sin bolsillo) + total en caja
 # ══════════════════════════════════════════════════════════════════════════════
-_neg      = balance < 0
-_pct_disp = (balance / ingreso_mes * 100) if ingreso_mes > 0 else 0
-_bar_w    = min(abs(_pct_disp), 100)
-_bar_c    = "#EF4444" if _neg else ("#10B981" if _pct_disp > 40 else "#F59E0B")
+# saldo_libre  = lo que puedes gastar libremente (sin contar el bolsillo TC)
+# balance      = total físico en caja (incluyendo lo apartado para TC)
+saldo_libre   = balance - saldo_bolsillo
+_neg_libre    = saldo_libre < 0
+_neg_total    = balance < 0
+_pct_libre    = (saldo_libre / ingreso_mes * 100) if ingreso_mes > 0 else 0
+_bar_w        = min(abs(_pct_libre), 100)
+_bar_c        = "#EF4444" if _neg_libre else ("#10B981" if _pct_libre > 30 else "#F59E0B")
 
-# Bloques de flujo (ingresos → gastos → balance)
+# Pre-computar todo — usar &#36; en lugar de $ para evitar que Streamlit
+# interprete los montos como delimitadores LaTeX ($...$)
+_eyebrow      = "⚠ Déficit" if _neg_libre else "Saldo disponible"
+_signo        = "−" if _neg_libre else "+"
+_amount_class = "jf-hero__amount jf-hero__amount--neg" if _neg_libre else "jf-hero__amount"
+_badge_class  = "jf-hero__badge jf-hero__badge--neg"  if _neg_libre else "jf-hero__badge"
+_badge_txt    = "déficit" if _neg_libre else f"{_pct_libre:.0f}% libre"
+_total_num    = _cop(abs(balance))
+_bolsillo_hint = (f'<div class="jf-hero__sec-hint">↳ {_cop(saldo_bolsillo)} en bolsillo TC</div>'
+                  if saldo_bolsillo > 0
+                  else '<div class="jf-hero__sec-hint" style="color:rgba(255,255,255,0.14);">Sin fondos en bolsillo TC</div>')
+_bar_label     = f"de {_cop(ingreso_mes)} recibidos" if ingreso_mes > 0 else "sin ingresos este mes"
+
 _bloques = ""
-_items = [
-    ("💵", "Ingresos", ingreso_mes, "#10B981"),
-    ("🏧", "Débito TD", gasto_td, "#6366F1"),
-    ("💳", "Pago TC", pagos_tc_mes, "#F43F5E"),
-]
-if saldo_bolsillo > 0:
-    _items.append(("💼", "Bolsillo", saldo_bolsillo, "#F59E0B"))
+for _ico, _lbl, _val, _col in [
+    ("💵", "Ingresos",  ingreso_mes,    "#10B981"),
+    ("🏧", "Débito TD", gasto_td,       "#6366F1"),
+    ("💳", "Pago TC",   pagos_tc_mes,   "#F43F5E"),
+    ("💼", "Bolsillo",  saldo_bolsillo, "#F59E0B"),
+]:
+    _bloques += (
+        f'<div class="jf-hero-flow-item">'
+        f'<div class="jf-hero-flow-icon">{_ico}</div>'
+        f'<div class="jf-hero-flow-val" style="color:{_col};">{_cop(_val)}</div>'
+        f'<div class="jf-hero-flow-lbl">{_lbl}</div>'
+        f'</div>'
+    )
 
-for _ico, _lbl, _val, _col in _items:
-    _bloques += f"""
-<div class="jf-hero-flow-item">
-  <div class="jf-hero-flow-icon">{_ico}</div>
-  <div class="jf-hero-flow-val" style="color:{_col};">${_val:,.0f}</div>
-  <div class="jf-hero-flow-lbl">{_lbl}</div>
-</div>"""
-
-st.markdown(f"""
-<div class="jf-hero">
-  <div class="jf-hero__eyebrow">
-    {'⚠ Déficit' if _neg else 'Saldo de caja'} · {MESES_ES[mes]} {anio}
-  </div>
-  <div class="jf-hero__main">
-    <div class="jf-hero__amount {'jf-hero__amount--neg' if _neg else ''}">
-      {'−' if _neg else '+'}${abs(balance):,.0f}
-      <span class="jf-hero__cop">COP</span>
-    </div>
-    <div class="jf-hero__badge {'jf-hero__badge--neg' if _neg else ''}">
-      {'déficit' if _neg else f'{_pct_disp:.0f}% disponible'}
-    </div>
-  </div>
-  <div class="jf-hero__bar-wrap">
-    <div class="jf-hero__bar-bg">
-      <div class="jf-hero__bar-fill" style="width:{_bar_w:.1f}%;background:{_bar_c};"></div>
-    </div>
-    <span class="jf-hero__bar-label">{'Déficit' if _neg else f'{_pct_disp:.0f}% del ingreso disponible'}</span>
-  </div>
-  <div class="jf-hero__flow">
-    {_bloques}
-  </div>
-</div>""", unsafe_allow_html=True)
+st.markdown(
+    # ── head: eyebrow izquierda, badge derecha ──────────────────────
+    f'<div class="jf-hero">'
+    f'<div class="jf-hero__head">'
+    f'<span class="jf-hero__eyebrow">{_eyebrow} &nbsp;·&nbsp; {MESES_ES[mes]} {anio}</span>'
+    f'<span class="{_badge_class}">{_badge_txt}</span>'
+    f'</div>'
+    # ── split: saldo libre (izq) | sep | total en caja (der) ────────
+    f'<div class="jf-hero__split">'
+    f'<div class="jf-hero__primary">'
+    f'<div class="{_amount_class}">{_signo}&nbsp;{_cop(abs(saldo_libre))}<span class="jf-hero__cop">COP</span></div>'
+    f'<div class="jf-hero__bar-wrap">'
+    f'<div class="jf-hero__bar-bg">'
+    f'<div class="jf-hero__bar-fill" style="width:{_bar_w:.1f}%;background:{_bar_c};"></div>'
+    f'</div>'
+    f'<span class="jf-hero__bar-label">{_bar_label}</span>'
+    f'</div>'
+    f'</div>'
+    f'<div class="jf-hero__vsep"></div>'
+    f'<div class="jf-hero__secondary">'
+    f'<div class="jf-hero__sec-label">Total en caja</div>'
+    f'<div class="jf-hero__sec-val">{_total_num}</div>'
+    f'{_bolsillo_hint}'
+    f'</div>'
+    f'</div>'
+    # ── flow strip: 4 stats ─────────────────────────────────────────
+    f'<div class="jf-hero__flow">{_bloques}</div>'
+    f'</div>',
+    unsafe_allow_html=True,
+)
 
 # Sin ingresos — aviso amable
 if ingreso_mes == 0:
