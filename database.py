@@ -14,7 +14,7 @@ _DEFAULTS: dict[str, float] = {
     "ingreso_neto":        4_400_000,
     "limite_gastos_pct":   0.80,
     "meta_ahorro_pct":     0.10,
-    "meta_desarrollo_pct": 0.20,
+    "meta_desarrollo_pct": 0.10,
     "meta_fondo":          6_300_000,
 }
 

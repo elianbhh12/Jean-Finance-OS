@@ -18,7 +18,7 @@ from database import (
     get_fijos_pagados_mes, set_fijo_estado,
     insertar_pago_tc, total_pagado_tc, total_pagado_tc_mes,
     obtener_pagos_tc, eliminar_pago_tc, total_gastos_tc_historico,
-    CATEGORIAS, METODOS_PAGO, TIPOS_INGRESO,
+    CATEGORIAS, METODOS_PAGO, TIPOS_INGRESO, DB_PATH,
 )
 
 # ─── Constantes UI (definidas UNA sola vez) ───────────────────────────────────
@@ -267,7 +267,7 @@ st.markdown(f"""
   <div class="jf-logo">💰</div>
   <div>
     <div class="jf-title">Jean Finance OS</div>
-    <div class="jf-subtitle">Regla 80 / 10 / 20</div>
+    <div class="jf-subtitle">Regla 80 / 10 / 10</div>
   </div>
   <div class="jf-header-badge">Base mensual &nbsp;<span>${INGRESO_NETO:,.0f} COP</span></div>
 </div>
@@ -298,8 +298,12 @@ with tab_home:
     pend_tc  = pend_nu + pend_bc
     pagos_tc_mes = _tc_pag_mes(anio, mes)
 
+    gasto_dev = float(df_gastos[df_gastos["categoria"]=="Educación/Certs"]["monto"].sum())
+    gasto_deseos = float(df_gastos[df_gastos["categoria"]=="Deseos"]["monto"].sum())
+
     pct_gasto = gasto_mes / LIMITE_GASTOS  if LIMITE_GASTOS > 0  else 0
     pct_fondo = saldo_ahorro / META_FONDO  if META_FONDO > 0     else 0
+    pct_dev   = gasto_dev / META_DESARROLLO if META_DESARROLLO > 0 else 0
 
     # Balance hero
     if ingreso_mes > 0:
@@ -361,8 +365,8 @@ with tab_home:
     with t1: st.markdown(_tc_card_html("TC Nubank",      pend_nu, hist_nu, pag_nu), unsafe_allow_html=True)
     with t2: st.markdown(_tc_card_html("TC Bancolombia", pend_bc, hist_bc, pag_bc), unsafe_allow_html=True)
 
-    # Budget cards 80/10/20
-    st.markdown('<div class="jf-section">Regla 80 / 10 / 20</div>', unsafe_allow_html=True)
+    # Budget cards 80/10/10
+    st.markdown('<div class="jf-section">Regla 80 / 10 / 10</div>', unsafe_allow_html=True)
     pagados_set   = _fijos_set(anio, mes)
     pagados_count = sum(1 for _, c in GASTOS_FIJOS if c in pagados_set)
 
@@ -378,10 +382,15 @@ with tab_home:
     elif pct_fondo >= 0.5:  f_c,f_bg,f_tc,f_st = "#6366F1","#EEF2FF","#4F46E5","↑ Progresando"
     else:                   f_c,f_bg,f_tc,f_st = "#8B5CF6","#F5F3FF","#7C3AED","→ En curso"
 
+    if pct_dev >= 1.0:      d_c,d_bg,d_tc,d_st = "#10B981","#F0FDF4","#059669","✓ Meta cumplida"
+    elif pct_dev >= 0.5:    d_c,d_bg,d_tc,d_st = "#6366F1","#EEF2FF","#4F46E5","↑ En progreso"
+    elif gasto_dev > 0:     d_c,d_bg,d_tc,d_st = "#F59E0B","#FFFBEB","#D97706","→ Iniciando"
+    else:                   d_c,d_bg,d_tc,d_st = "#94A3B8","#F8FAFC","#64748B","→ Sin registrar"
+
     bc1, bc2, bc3 = st.columns(3)
     with bc1: st.markdown(_budget_card_html("Gastos del mes","Regla · 80%",gasto_mes,LIMITE_GASTOS,pct_gasto,g_c,g_tc,g_bg,g_st,"💸"), unsafe_allow_html=True)
     with bc2: st.markdown(_budget_card_html("Fondo emergencia","Meta · 6 meses",saldo_ahorro,META_FONDO,pct_fondo,f_c,f_tc,f_bg,f_st,"🏦"), unsafe_allow_html=True)
-    with bc3: st.markdown(_budget_card_html("Desarrollo / inversión","Regla · 20%",0,META_DESARROLLO,0.0,"#94A3B8","#64748B","#F8FAFC","→ Sin registrar","🚀"), unsafe_allow_html=True)
+    with bc3: st.markdown(_budget_card_html("Desarrollo / inversión","Regla · 10%",gasto_dev,META_DESARROLLO,pct_dev,d_c,d_tc,d_bg,d_st,"🚀"), unsafe_allow_html=True)
 
     # Fijos checklist
     st.markdown(f"""
@@ -410,7 +419,7 @@ with tab_home:
     df_it = _ingresos_trend(7)
     if not df_gt.empty:
         st.markdown('<div class="jf-section">Tendencia 6 meses</div>', unsafe_allow_html=True)
-        st.plotly_chart(_trend_chart(df_gt, df_it), use_container_width=True, key="trend_home")
+        st.plotly_chart(_trend_chart(df_gt, df_it), width="stretch", key="trend_home")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -453,7 +462,7 @@ with tab_ingresos:
             nota_i     = st.text_input("Nota (opcional)", placeholder="Ej: con comisión de ventas incluida")
         with fi2:
             tipo_i = st.radio("Tipo *", TIPOS_INGRESO)
-        if st.form_submit_button("Registrar ingreso", use_container_width=True, type="primary"):
+        if st.form_submit_button("Registrar ingreso", width="stretch", type="primary"):
             if monto_i <= 0: st.error("El monto debe ser mayor a $0.")
             elif not concepto_i.strip(): st.error("Escribe un concepto.")
             else:
@@ -530,11 +539,11 @@ with tab_registro:
             categoria = st.selectbox("Categoría *", CATEGORIAS)
             st.markdown("&nbsp;")
             st.info("Compras con TC no descuentan de caja hasta pagar el extracto en **💳 Tarjetas**.")
-        if st.form_submit_button("Registrar gasto", use_container_width=True, type="primary"):
+        if st.form_submit_button("Registrar gasto", width="stretch", type="primary"):
             if monto_g <= 0: st.error("El monto debe ser mayor a $0.")
             else:
                 insertar_gasto(fecha_g, descripcion, categoria, monto_g, metodo_pago, nota_g)
-                _invalidar(); st.success(f"Gasto de **${monto_g:,.0f}** en **{categoria}** registrado.")
+                _invalidar(); st.success(f"Gasto de **${monto_g:,.0f}** en **{categoria}** registrado."); st.rerun()
 
     st.markdown('<div class="jf-section">Historial</div>', unsafe_allow_html=True)
     anio_r, mes_r = _selector_mes("reg")
@@ -631,7 +640,7 @@ with tab_tc:
         with pt2: monto_tc   = st.number_input("Monto (COP)", min_value=0, max_value=20_000_000, value=0, step=10_000, format="%d")
         with pt3: fecha_tc   = st.date_input("Fecha", value=hoy, format="DD/MM/YYYY")
         concepto_tc = st.text_input("Concepto (opcional)", placeholder="Ej: Pago extracto mayo Nubank")
-        if st.form_submit_button("Registrar pago", type="primary", use_container_width=True):
+        if st.form_submit_button("Registrar pago", type="primary", width="stretch"):
             if monto_tc <= 0: st.error("El monto debe ser mayor a $0.")
             else:
                 insertar_pago_tc(fecha_tc, tarjeta_tc, monto_tc, concepto_tc)
@@ -731,7 +740,7 @@ with tab_ahorro:
             tipo_a = st.radio("Tipo *", ["ingreso","retiro"],
                               format_func=lambda x: "Ingreso (ahorro)" if x=="ingreso" else "Retiro")
             if tipo_a == "retiro": st.warning("Solo en emergencia real.")
-        if st.form_submit_button("Registrar", use_container_width=True, type="primary"):
+        if st.form_submit_button("Registrar", width="stretch", type="primary"):
             if monto_a <= 0: st.error("El monto debe ser mayor a $0.")
             elif not concepto_a.strip(): st.error("Escribe un concepto.")
             else:
@@ -812,8 +821,11 @@ with tab_analisis:
         row_d = df_cat_act[df_cat_act["categoria"]=="Deseos"]
         if not row_d.empty:
             gd = row_d["monto"].values[0]
-            if gd / META_DESARROLLO >= 0.70:
-                st.warning(f"**Deseos** lleva ${gd:,.0f} — {gd/META_DESARROLLO:.0%} del límite (${META_DESARROLLO:,.0f}).")
+            pct_deseos = gd / LIMITE_GASTOS if LIMITE_GASTOS > 0 else 0
+            if pct_deseos >= 0.20:
+                st.error(f"🎯 **Deseos** lleva **${gd:,.0f}** — {pct_deseos:.0%} de tus gastos totales. Considera reducir.")
+            elif pct_deseos >= 0.10:
+                st.warning(f"🎯 **Deseos** lleva **${gd:,.0f}** — {pct_deseos:.0%} de tus gastos totales.")
 
     # Gráfica comparativa + pie
     st.markdown('<div class="jf-section">Distribución por categoría</div>', unsafe_allow_html=True)
@@ -841,7 +853,7 @@ with tab_analisis:
                 legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="left",x=0,font=dict(color="#94A3B8",size=11)),
                 plot_bgcolor="#FFFFFF",paper_bgcolor="rgba(0,0,0,0)",
                 font=dict(size=11,color="#94A3B8"),bargap=0.25,bargroupgap=0.08)
-            st.plotly_chart(fig, use_container_width=True, key="anal_bar")
+            st.plotly_chart(fig, width="stretch", key="anal_bar")
     with gb:
         if not df_met_act.empty:
             fig_pie = go.Figure(go.Pie(
@@ -851,13 +863,13 @@ with tab_analisis:
                 insidetextorientation="radial"))
             fig_pie.update_layout(height=320,margin=dict(t=10,b=10,l=0,r=0),
                 showlegend=False,plot_bgcolor="rgba(0,0,0,0)",paper_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig_pie, use_container_width=True, key="anal_pie")
+            st.plotly_chart(fig_pie, width="stretch", key="anal_pie")
 
     # Tendencia 6 meses
     st.markdown('<div class="jf-section">Tendencia 6 meses</div>', unsafe_allow_html=True)
     df_gt2 = _gastos_trend(7); df_it2 = _ingresos_trend(7)
     if df_gt2.empty: st.info("Aún no hay datos históricos suficientes.")
-    else: st.plotly_chart(_trend_chart(df_gt2, df_it2), use_container_width=True, key="anal_trend")
+    else: st.plotly_chart(_trend_chart(df_gt2, df_it2), width="stretch", key="anal_trend")
 
     # Top categorías ranking
     if not df_cat_act.empty:
@@ -935,7 +947,7 @@ with tab_config:
             st.caption(f"Ahorro: ${new_ingreso * new_ahorro_pct/100:,.0f}")
             st.caption(f"Desarrollo: ${new_ingreso * new_dev_pct/100:,.0f}")
 
-        if st.form_submit_button("Guardar configuración", type="primary", use_container_width=True):
+        if st.form_submit_button("Guardar configuración", type="primary", width="stretch"):
             if total_pct != 100:
                 st.error("Los porcentajes deben sumar 100%.")
             else:
@@ -956,3 +968,31 @@ with tab_config:
     with r2: st.metric("Límite gastos 80%", f"${d['LIMITE_GASTOS']:,.0f}")
     with r3: st.metric("Meta ahorro 10%",   f"${d['META_AHORRO']:,.0f}")
     with r4: st.metric("Meta desarrollo",   f"${d['META_DESARROLLO']:,.0f}")
+
+    st.markdown('<div class="jf-section">Respaldo de datos</div>', unsafe_allow_html=True)
+
+    dl_col, ul_col = st.columns(2)
+
+    with dl_col:
+        st.markdown("**⬇️ Exportar**")
+        st.caption("Descarga tu base de datos para guardar un respaldo antes de cualquier redeploy.")
+        db_bytes = DB_PATH.read_bytes()
+        st.download_button(
+            label="Descargar finanzas.db",
+            data=db_bytes,
+            file_name="finanzas.db",
+            mime="application/octet-stream",
+            width="stretch",
+        )
+
+    with ul_col:
+        st.markdown("**⬆️ Restaurar**")
+        st.caption("Sube tu respaldo después de un redeploy para recuperar todos tus datos.")
+        archivo = st.file_uploader("Selecciona finanzas.db", type=["db"], label_visibility="collapsed")
+        if archivo is not None:
+            if st.button("Restaurar base de datos", type="primary", width="stretch"):
+                DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+                DB_PATH.write_bytes(archivo.read())
+                _invalidar()
+                st.success("Base de datos restaurada correctamente.")
+                st.rerun()
