@@ -15,6 +15,7 @@ from database import (
     total_gastos_tc_historico, total_pagado_tc, total_pagado_tc_mes,
     get_fijos_pagados_mes,
     obtener_saldo_bolsillo, obtener_movimientos_bolsillo, neto_bolsillo_mes,
+    neto_ahorro_mes, total_ahorro_afecta_saldo,
     CATEGORIAS,
 )
 
@@ -97,6 +98,12 @@ def q_movs_bolsillo():                 return obtener_movimientos_bolsillo()
 @st.cache_data(ttl=30)
 def q_neto_bolsillo_mes(a: int, m: int): return neto_bolsillo_mes(a, m)
 
+@st.cache_data(ttl=30)
+def q_neto_ahorro_mes(a: int, m: int):   return neto_ahorro_mes(a, m)
+
+@st.cache_data(ttl=30)
+def q_total_ahorro_afecta():             return total_ahorro_afecta_saldo()
+
 
 def invalidar():
     """Limpia todas las caches tras mutaciones."""
@@ -105,6 +112,7 @@ def invalidar():
     q_ingresos_trend.clear(); q_tc_hist.clear();        q_tc_pag.clear()
     q_tc_pag_mes.clear();     q_fijos_set.clear();      cfg_derived.clear()
     q_saldo_bolsillo.clear(); q_movs_bolsillo.clear();  q_neto_bolsillo_mes.clear()
+    q_neto_ahorro_mes.clear(); q_total_ahorro_afecta.clear()
 
 
 # ─── Helpers UI ───────────────────────────────────────────────────────────────

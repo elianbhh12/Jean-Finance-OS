@@ -16,6 +16,7 @@ _DEFAULTS: dict[str, float] = {
     "meta_ahorro_pct":     0.10,
     "meta_desarrollo_pct": 0.10,
     "meta_fondo":          6_300_000,
+    "saldo_banco":         0.0,   # 0 = auto-calcular; >0 = saldo real ingresado manualmente
 }
 
 
@@ -94,8 +95,9 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_pagos_tc_fecha ON pagos_tc(fecha);
             CREATE INDEX IF NOT EXISTS idx_bolsillo_fecha ON bolsillo(fecha);
         """)
-        _add_col(conn, "gastos",   "nota", "TEXT DEFAULT ''")
-        _add_col(conn, "ingresos", "nota", "TEXT DEFAULT ''")
+        _add_col(conn, "gastos",    "nota",          "TEXT DEFAULT ''")
+        _add_col(conn, "ingresos",  "nota",          "TEXT DEFAULT ''")
+        _add_col(conn, "ahorros",   "afecta_saldo",  "INTEGER DEFAULT 0")
         for k, v in _DEFAULTS.items():
             conn.execute(
                 "INSERT OR IGNORE INTO configuracion(clave,valor) VALUES(?,?)",
@@ -130,6 +132,11 @@ def get_derived(cfg: dict | None = None) -> dict[str, float]:
         "META_AHORRO":           base * c["meta_ahorro_pct"],
         "META_DESARROLLO":       base * c["meta_desarrollo_pct"],
         "META_FONDO_EMERGENCIA": c["meta_fondo"],
+        # porcentajes reales para que la UI se adapte al cambiarlos en config
+        "PCT_GASTOS":            round(c["limite_gastos_pct"] * 100),
+        "PCT_AHORRO":            round(c["meta_ahorro_pct"] * 100),
+        "PCT_DESARROLLO":        round(c["meta_desarrollo_pct"] * 100),
+        "SALDO_BANCO":           c["saldo_banco"],
     }
 
 
@@ -251,12 +258,22 @@ def ingresos_ultimos_meses(n: int = 6) -> pd.DataFrame:
 
 # ─── AHORROS ──────────────────────────────────────────────────────────────────
 
-def insertar_movimiento_ahorro(fecha, concepto: str, monto: float, tipo: str):
+def insertar_movimiento_ahorro(fecha, concepto: str, monto: float, tipo: str, afecta_saldo: bool = False):
     with get_conn() as conn:
         conn.execute(
-            "INSERT INTO ahorros(fecha,concepto,monto,tipo) VALUES(?,?,?,?)",
-            (str(fecha), concepto.strip(), float(monto), tipo),
+            "INSERT INTO ahorros(fecha,concepto,monto,tipo,afecta_saldo) VALUES(?,?,?,?,?)",
+            (str(fecha), concepto.strip(), float(monto), tipo, int(afecta_saldo)),
         )
+
+
+def total_ahorro_afecta_saldo() -> float:
+    """Total neto de ahorros marcados como 'descontar del saldo disponible'."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT COALESCE(SUM(CASE WHEN tipo='ingreso' THEN monto ELSE -monto END),0) AS neto "
+            "FROM ahorros WHERE afecta_saldo = 1"
+        ).fetchone()
+    return float(row["neto"])
 
 
 def obtener_saldo_ahorro() -> float:
@@ -273,6 +290,22 @@ def obtener_movimientos_ahorro() -> pd.DataFrame:
         return pd.read_sql_query(
             "SELECT * FROM ahorros ORDER BY fecha DESC, id DESC", conn
         )
+
+
+def neto_ahorro_mes(anio: int, mes: int) -> float:
+    """Depósitos a ahorro en el mes (salida real del banco hacia cuenta de ahorro)."""
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT COALESCE(SUM(CASE WHEN tipo='ingreso' THEN monto ELSE -monto END),0) AS neto "
+            "FROM ahorros WHERE strftime('%Y',fecha)=? AND strftime('%m',fecha)=?",
+            (str(anio), f"{mes:02d}"),
+        ).fetchone()
+    return float(row["neto"])
+
+
+def eliminar_ahorro(ahorro_id: int):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM ahorros WHERE id=?", (ahorro_id,))
 
 
 def proyeccion_fondo(saldo_actual: float, ahorro_mensual: float, meta: float) -> int:

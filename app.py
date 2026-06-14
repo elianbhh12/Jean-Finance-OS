@@ -22,12 +22,16 @@ CFG             = cfg_derived()
 INGRESO_NETO    = CFG["INGRESO_NETO"]
 META_AHORRO     = CFG["META_AHORRO"]
 META_DESARROLLO = CFG["META_DESARROLLO"]
+PCT_G           = int(CFG["PCT_GASTOS"])
+PCT_A           = int(CFG["PCT_AHORRO"])
+PCT_D           = int(CFG["PCT_DESARROLLO"])
 quincenal       = INGRESO_NETO / 2
 ahorro_q        = META_AHORRO / 2
 desarrollo_q    = META_DESARROLLO / 2
 gastos_q        = (INGRESO_NETO - META_AHORRO - META_DESARROLLO) / 2
 hoy             = date.today()
 mes_label       = MESES_ES[hoy.month]
+regla_label     = f"{PCT_G} · {PCT_A} · {PCT_D}"
 
 with st.sidebar:
     # ── Header: logo + mes + quincenas + regla 80/10/10 ──────────────────────
@@ -37,7 +41,7 @@ with st.sidebar:
     <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">💰</div>
     <div>
       <div style="font-size:1.1rem;font-weight:800;color:#0F172A;letter-spacing:-0.3px;line-height:1.1;">Jean Finance</div>
-      <div style="font-size:0.68rem;color:#94A3B8;letter-spacing:.3px;">OS · Regla 80 · 10 · 10</div>
+      <div style="font-size:0.68rem;color:#94A3B8;letter-spacing:.3px;">OS · Regla {regla_label}</div>
     </div>
   </div>
   <div style="font-size:0.68rem;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">{mes_label} {hoy.year}</div>
@@ -60,14 +64,14 @@ with st.sidebar:
   <div style="margin-top:8px;">
     <div style="font-size:0.6rem;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;">Distribución objetivo</div>
     <div style="display:flex;height:6px;border-radius:4px;overflow:hidden;gap:2px;">
-      <div style="flex:80;background:#6366F1;border-radius:4px 0 0 4px;"></div>
-      <div style="flex:10;background:#10B981;"></div>
-      <div style="flex:10;background:#F59E0B;border-radius:0 4px 4px 0;"></div>
+      <div style="flex:{PCT_G};background:#6366F1;border-radius:4px 0 0 4px;"></div>
+      <div style="flex:{PCT_A};background:#10B981;"></div>
+      <div style="flex:{PCT_D};background:#F59E0B;border-radius:0 4px 4px 0;"></div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:5px;">
-      <span style="font-size:0.6rem;color:#6366F1;font-weight:600;">80% Gastos</span>
-      <span style="font-size:0.6rem;color:#10B981;font-weight:600;">10% Ahorro</span>
-      <span style="font-size:0.6rem;color:#F59E0B;font-weight:600;">10% Desarrollo</span>
+      <span style="font-size:0.6rem;color:#6366F1;font-weight:600;">{PCT_G}% Gastos</span>
+      <span style="font-size:0.6rem;color:#10B981;font-weight:600;">{PCT_A}% Ahorro</span>
+      <span style="font-size:0.6rem;color:#F59E0B;font-weight:600;">{PCT_D}% Desarrollo</span>
     </div>
   </div>
 </div>
@@ -80,17 +84,17 @@ with st.sidebar:
         f'<div style="font-size:0.6rem;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">&#128161; Ahorro por quincena</div>'
         f'<div style="display:flex;gap:8px;margin-bottom:8px;">'
         f'<div style="flex:1;background:#fff;border:1px solid #D1FAE5;border-radius:9px;padding:8px 10px;text-align:center;">'
-        f'<div style="font-size:0.58rem;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">Ahorro 10%</div>'
+        f'<div style="font-size:0.58rem;font-weight:700;color:#10B981;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">Ahorro {PCT_A}%</div>'
         f'<div style="font-size:1.05rem;font-weight:800;color:#059669;letter-spacing:-.5px;">&#36;{ahorro_q:,.0f}</div>'
         f'</div>'
         f'<div style="flex:1;background:#fff;border:1px solid #FDE68A;border-radius:9px;padding:8px 10px;text-align:center;">'
-        f'<div style="font-size:0.58rem;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">Desarrollo 10%</div>'
+        f'<div style="font-size:0.58rem;font-weight:700;color:#D97706;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;">Desarrollo {PCT_D}%</div>'
         f'<div style="font-size:1.05rem;font-weight:800;color:#D97706;letter-spacing:-.5px;">&#36;{desarrollo_q:,.0f}</div>'
         f'</div>'
         f'</div>'
         f'<div style="background:#fff;border:1px solid #C7D2FE;border-radius:9px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">'
         f'<div>'
-        f'<div style="font-size:0.58rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.4px;">Disponible gastos 80%</div>'
+        f'<div style="font-size:0.58rem;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:.4px;">Disponible gastos {PCT_G}%</div>'
         f'<div style="font-size:0.68rem;color:#94A3B8;margin-top:1px;">Lo que puedes gastar libre</div>'
         f'</div>'
         f'<div style="font-size:1.05rem;font-weight:800;color:#4F46E5;letter-spacing:-.5px;">&#36;{gastos_q:,.0f}</div>'

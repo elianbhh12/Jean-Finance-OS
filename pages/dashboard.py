@@ -3,7 +3,7 @@ from datetime import date
 from utils import (
     cfg_derived, q_gastos_mes, q_ingresos_mes, q_saldo_ahorro,
     q_tc_hist, q_tc_pag, q_tc_pag_mes, q_fijos_set, q_gastos_trend, q_ingresos_trend,
-    q_saldo_bolsillo, q_neto_bolsillo_mes,
+    q_saldo_bolsillo, q_neto_bolsillo_mes, q_neto_ahorro_mes, q_total_ahorro_afecta,
     invalidar, rows_gastos, tc_card_html, budget_card_html, trend_chart,
     MESES_ES, GASTOS_FIJOS, CAT_ICON,
 )
@@ -17,6 +17,9 @@ LIMITE_GASTOS   = CFG["LIMITE_GASTOS"]
 META_AHORRO     = CFG["META_AHORRO"]
 META_DESARROLLO = CFG["META_DESARROLLO"]
 META_FONDO      = CFG["META_FONDO_EMERGENCIA"]
+PCT_G           = int(CFG["PCT_GASTOS"])
+PCT_A           = int(CFG["PCT_AHORRO"])
+PCT_D           = int(CFG["PCT_DESARROLLO"])
 
 anio, mes     = hoy.year, hoy.month
 df_gastos     = q_gastos_mes(anio, mes)
@@ -38,10 +41,12 @@ pct_gasto = gasto_mes / LIMITE_GASTOS   if LIMITE_GASTOS   > 0 else 0
 pct_fondo = saldo_ahorro / META_FONDO   if META_FONDO      > 0 else 0
 pct_dev   = gasto_dev / META_DESARROLLO if META_DESARROLLO > 0 else 0
 
-saldo_bolsillo = q_saldo_bolsillo()
-bolsillo_mes   = q_neto_bolsillo_mes(anio, mes)
+saldo_bolsillo    = q_saldo_bolsillo()
+bolsillo_mes      = q_neto_bolsillo_mes(anio, mes)
+ahorro_mes        = q_neto_ahorro_mes(anio, mes)
+ahorro_descuenta  = q_total_ahorro_afecta()
 
-balance  = ingreso_mes - gasto_td - pagos_tc_mes
+balance = ingreso_mes - gasto_td - pagos_tc_mes - ahorro_descuenta
 _resto   = max(LIMITE_GASTOS - gasto_mes, 0)
 _exceso  = max(gasto_mes - LIMITE_GASTOS, 0)
 g_ok     = pct_gasto < 1.0
@@ -93,34 +98,32 @@ elif pct_gasto >= 0.75:
 # ══════════════════════════════════════════════════════════════════════════════
 # HERO — saldo libre (sin bolsillo) + total en caja
 # ══════════════════════════════════════════════════════════════════════════════
-# saldo_libre  = lo que puedes gastar libremente (sin contar el bolsillo TC)
-# balance      = total físico en caja (incluyendo lo apartado para TC)
 saldo_libre   = balance - saldo_bolsillo
+_total_caja   = balance
 _neg_libre    = saldo_libre < 0
-_neg_total    = balance < 0
-_pct_libre    = (saldo_libre / ingreso_mes * 100) if ingreso_mes > 0 else 0
+_base_ref     = ingreso_mes if ingreso_mes > 0 else INGRESO_NETO
+_pct_libre    = (saldo_libre / _base_ref * 100) if _base_ref > 0 else 0
 _bar_w        = min(abs(_pct_libre), 100)
 _bar_c        = "#EF4444" if _neg_libre else ("#10B981" if _pct_libre > 30 else "#F59E0B")
 
-# Pre-computar todo — usar &#36; en lugar de $ para evitar que Streamlit
-# interprete los montos como delimitadores LaTeX ($...$)
 _eyebrow      = "⚠ Déficit" if _neg_libre else "Saldo disponible"
 _signo        = "−" if _neg_libre else "+"
 _amount_class = "jf-hero__amount jf-hero__amount--neg" if _neg_libre else "jf-hero__amount"
 _badge_class  = "jf-hero__badge jf-hero__badge--neg"  if _neg_libre else "jf-hero__badge"
 _badge_txt    = "déficit" if _neg_libre else f"{_pct_libre:.0f}% libre"
-_total_num    = _cop(abs(balance))
-_bolsillo_hint = (f'<div class="jf-hero__sec-hint">↳ {_cop(saldo_bolsillo)} en bolsillo TC</div>'
-                  if saldo_bolsillo > 0
-                  else '<div class="jf-hero__sec-hint" style="color:rgba(255,255,255,0.14);">Sin fondos en bolsillo TC</div>')
-_bar_label     = f"de {_cop(ingreso_mes)} recibidos" if ingreso_mes > 0 else "sin ingresos este mes"
+_total_num    = _cop(abs(_total_caja))
+_ahorro_hint  = f" · {_cop(saldo_ahorro)} en ahorro" if saldo_ahorro > 0 else ""
+_bolsillo_hint = (f'<div class="jf-hero__sec-hint">↳ {_cop(saldo_bolsillo)} en bolsillo TC{_ahorro_hint}</div>'
+                  if saldo_bolsillo > 0 or saldo_ahorro > 0
+                  else '<div class="jf-hero__sec-hint" style="color:rgba(255,255,255,0.14);">Sin reservas</div>')
+_bar_label     = (f"de {_cop(ingreso_mes)} recibidos" if ingreso_mes > 0 else "sin ingresos este mes")
 
 _bloques = ""
 for _ico, _lbl, _val, _col in [
     ("💵", "Ingresos",  ingreso_mes,    "#10B981"),
     ("🏧", "Débito TD", gasto_td,       "#6366F1"),
     ("💳", "Pago TC",   pagos_tc_mes,   "#F43F5E"),
-    ("💼", "Bolsillo",  saldo_bolsillo, "#F59E0B"),
+    ("🏦", "Ahorro",    ahorro_mes,     "#8B5CF6"),
 ]:
     _bloques += (
         f'<div class="jf-hero-flow-item">'
@@ -203,7 +206,7 @@ st.markdown(f"""
 # ══════════════════════════════════════════════════════════════════════════════
 # REGLA 80/10/10 — 3 budget cards
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div class="jf-section">Regla 80 / 10 / 10</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="jf-section">Regla {PCT_G} / {PCT_A} / {PCT_D}</div>', unsafe_allow_html=True)
 
 if pct_gasto >= 0.90:   g_c, g_bg, g_tc, g_st = "#EF4444", "#FEF2F2", "#DC2626", "⚠ Límite próximo"
 elif pct_gasto >= 0.75: g_c, g_bg, g_tc, g_st = "#F59E0B", "#FFFBEB", "#D97706", "~ Atención"
@@ -219,9 +222,9 @@ elif gasto_dev > 0:     d_c, d_bg, d_tc, d_st = "#F59E0B", "#FFFBEB", "#D97706",
 else:                   d_c, d_bg, d_tc, d_st = "#94A3B8", "#F8FAFC", "#64748B", "→ Sin registrar"
 
 bc1, bc2, bc3 = st.columns(3)
-with bc1: st.markdown(budget_card_html("Gastos del mes",       "Regla · 80%",    gasto_mes,    LIMITE_GASTOS,   pct_gasto, g_c, g_tc, g_bg, g_st, "💸"), unsafe_allow_html=True)
-with bc2: st.markdown(budget_card_html("Fondo emergencia",     "Meta · 6 meses", saldo_ahorro, META_FONDO,      pct_fondo, f_c, f_tc, f_bg, f_st, "🏦"), unsafe_allow_html=True)
-with bc3: st.markdown(budget_card_html("Desarrollo/inversión", "Regla · 10%",    gasto_dev,    META_DESARROLLO, pct_dev,   d_c, d_tc, d_bg, d_st, "🚀"), unsafe_allow_html=True)
+with bc1: st.markdown(budget_card_html("Gastos del mes",       f"Regla · {PCT_G}%",    gasto_mes,    LIMITE_GASTOS,   pct_gasto, g_c, g_tc, g_bg, g_st, "💸"), unsafe_allow_html=True)
+with bc2: st.markdown(budget_card_html("Fondo emergencia",     "Meta · 6 meses",       saldo_ahorro, META_FONDO,      pct_fondo, f_c, f_tc, f_bg, f_st, "🏦"), unsafe_allow_html=True)
+with bc3: st.markdown(budget_card_html("Desarrollo/inversión", f"Regla · {PCT_D}%",    gasto_dev,    META_DESARROLLO, pct_dev,   d_c, d_tc, d_bg, d_st, "🚀"), unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BOLSILLO TC + TARJETAS — 2 cols (relacionados entre sí)
